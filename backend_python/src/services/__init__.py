@@ -1,5 +1,5 @@
 """Business logic services."""
+# Import only what's needed to avoid circular dependencies
 from .calculation_service import CalculationService
-from .mortgage_service import MortgageService
 
-__all__ = ["CalculationService", "MortgageService"]
+__all__ = ["CalculationService"]

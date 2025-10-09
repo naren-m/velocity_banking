@@ -35,6 +35,10 @@ def create_app():
     db.init_app(app)
     CORS(app, origins=settings.allowed_origins)
 
+    # Import all models first (required for SQLAlchemy relationships)
+    from models.user_flask import User
+    from models.mortgage_flask import Mortgage
+
     # Initialize database
     with app.app_context():
         init_db()
