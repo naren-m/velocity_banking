@@ -20,10 +20,10 @@ A simple and clean web application to help users optimize their mortgage payoff 
 - React Router for navigation
 
 ### Backend
-- Node.js with Express
-- TypeScript
-- SQLite database with Drizzle ORM
-- Zod for validation
+- Python with Flask
+- SQLAlchemy ORM
+- SQLite database
+- Pydantic for validation
 
 ## Quick Start
 
@@ -79,14 +79,13 @@ velocity-banking/
 │   │   ├── types/         # TypeScript types
 │   │   └── utils/         # Utility functions
 │   └── package.json
-├── backend/               # Express backend
+├── backend_python/        # Flask backend
 │   ├── src/
 │   │   ├── controllers/   # Route controllers
 │   │   ├── services/      # Business logic
 │   │   ├── models/        # Database models
-│   │   ├── routes/        # API routes
-│   │   └── middleware/    # Express middleware
-│   └── package.json
+│   │   └── middleware/    # Flask middleware
+│   └── requirements.txt
 └── package.json           # Root workspace config
 ```
 
@@ -142,7 +141,7 @@ This calculator helps you visualize the impact of different chunk payment amount
 - **[Implementation Plan](IMPLEMENTATION_PLAN.md)** - Complete project roadmap
 - **[Project Status](PROJECT_STATUS.md)** - Current status dashboard
 - **[Makefile Docs](MAKEFILE_DOCUMENTATION.md)** - Full command reference
-- **[Testing Summary](backend/TESTING_SUMMARY.md)** - Test execution guide
+- **[Testing Summary](backend_python/TESTING_SUMMARY.md)** - Test execution guide
 - **[DevOps Setup](DEVOPS_SETUP_COMPLETE.md)** - DevOps automation guide
 
 ## Project Status
