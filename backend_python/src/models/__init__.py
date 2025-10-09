@@ -1,9 +1,5 @@
 """Database models."""
-from .base import Base
-from .user import User
-from .mortgage import Mortgage
-from .heloc import HELOC
-from .payment import Payment
-from .payment_strategy import PaymentStrategy
+# Don't import base here to avoid async engine initialization
+# Import specific models as needed
 
-__all__ = ["Base", "User", "Mortgage", "HELOC", "Payment", "PaymentStrategy"]
+__all__ = []

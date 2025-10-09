@@ -23,4 +23,4 @@ RUN mkdir -p /app/data
 EXPOSE 3001
 
 # Run the application
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "3001"]
+CMD ["python", "-m", "src.app"]
