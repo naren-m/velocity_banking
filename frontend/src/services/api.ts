@@ -9,7 +9,7 @@ import {
   HelocStrategy,
 } from '../types';
 
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:3001/api';
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -30,10 +30,20 @@ export const mortgageApi = {
     startDate: string;
     termMonths: number;
   }): Promise<Mortgage> => {
+    // Transform camelCase to snake_case for backend
+    const payload = {
+      user_id: data.userId,
+      principal: data.principal,
+      current_balance: data.currentBalance,
+      interest_rate: data.interestRate,
+      monthly_payment: data.monthlyPayment,
+      start_date: data.startDate,
+      term_months: data.termMonths,
+    };
     const response = await fetch(`${API_BASE}/mortgages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
     return handleResponse(response);
   },

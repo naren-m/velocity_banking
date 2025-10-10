@@ -46,9 +46,11 @@ def create_app():
     # Register blueprints
     from controllers.mortgage_controller_flask import mortgage_bp
     from controllers.optimization_controller import optimization_bp
+    from controllers.user_controller_flask import user_bp
 
     app.register_blueprint(mortgage_bp, url_prefix="/api/mortgages")
     app.register_blueprint(optimization_bp, url_prefix="/api/optimize")
+    app.register_blueprint(user_bp, url_prefix="/api/users")
 
     # Health check endpoint
     @app.route("/health")

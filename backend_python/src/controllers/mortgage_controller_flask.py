@@ -11,6 +11,7 @@ mortgage_bp = Blueprint("mortgages", __name__)
 calculation_service = CalculationService()
 
 
+@mortgage_bp.route("", methods=["POST"])
 @mortgage_bp.route("/", methods=["POST"])
 def create_mortgage():
     """Create a new mortgage."""

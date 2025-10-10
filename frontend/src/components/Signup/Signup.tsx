@@ -6,6 +6,8 @@ export const Signup = () => {
   const navigate = useNavigate();
   const { setUser } = useUserStore();
 
+  const [email, setEmail] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -14,6 +16,21 @@ export const Signup = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!email.trim()) {
+      setError('Please enter an email');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setError('Please enter a valid email');
+      return;
+    }
+
+    if (!name.trim()) {
+      setError('Please enter your name');
+      return;
+    }
 
     if (!username.trim()) {
       setError('Please enter a username');
@@ -48,6 +65,8 @@ export const Signup = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          email: email.toLowerCase().trim(),
+          name: name.trim(),
           username: username.toLowerCase().trim(),
           password: password
         }),
@@ -96,6 +115,38 @@ export const Signup = () => {
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your.email@example.com"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                required
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your full name"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                required
+                disabled={loading}
+              />
+            </div>
+
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
                 Username
