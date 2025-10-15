@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMortgageStore } from '../../stores/mortgageStore';
+import { useUserStore } from '../../stores/userStore';
 import { Card, CardHeader } from '../shared/Card';
 import { Button } from '../shared/Button';
 import { formatCurrency } from '../../utils/formatters';
@@ -7,18 +8,33 @@ import { useNavigate } from 'react-router-dom';
 
 export const Payment: React.FC = () => {
   const navigate = useNavigate();
-  const { mortgage, loading, makePayment, error } = useMortgageStore();
+  const { user } = useUserStore();
+  const { mortgage, loading, makePayment, error, fetchMortgagesByUser } = useMortgageStore();
   const [amount, setAmount] = useState('');
   const [paymentType, setPaymentType] = useState<'regular' | 'chunk' | 'extra'>('regular');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Fetch mortgage data when component mounts
+  useEffect(() => {
+    if (user && !mortgage) {
+      fetchMortgagesByUser(user.id);
+    }
+  }, [user, mortgage, fetchMortgagesByUser]);
 
   if (!mortgage) {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <Card>
           <CardHeader title="No Mortgage Found" />
-          <p className="text-gray-600">Please create a mortgage first.</p>
+          <p className="text-gray-600">
+            {loading ? 'Loading mortgage data...' : 'Please create a mortgage first.'}
+          </p>
+          {!loading && (
+            <Button onClick={() => navigate('/setup')} className="mt-4">
+              Create Mortgage
+            </Button>
+          )}
         </Card>
       </div>
     );

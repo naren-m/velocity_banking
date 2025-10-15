@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMortgageStore } from '../../stores/mortgageStore';
+import { useUserStore } from '../../stores/userStore';
 import { Card, CardHeader } from '../shared/Card';
 import { Button } from '../shared/Button';
 import {
@@ -59,12 +60,20 @@ interface InvestmentComparisonResult {
 }
 
 export const InvestmentComparison = () => {
-  const { mortgage: activeMortgage } = useMortgageStore();
+  const { user } = useUserStore();
+  const { mortgage: activeMortgage, fetchMortgagesByUser } = useMortgageStore();
   const [monthlyInvestment, setMonthlyInvestment] = useState<number>(500);
   const [marketReturn, setMarketReturn] = useState<number>(10);
   const [result, setResult] = useState<InvestmentComparisonResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Fetch mortgage data when component mounts
+  useEffect(() => {
+    if (user && !activeMortgage) {
+      fetchMortgagesByUser(user.id);
+    }
+  }, [user, activeMortgage, fetchMortgagesByUser]);
 
   const handleCalculate = async () => {
     if (!activeMortgage) {

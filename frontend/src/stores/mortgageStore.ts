@@ -71,7 +71,23 @@ export const useMortgageStore = create<MortgageStore>((set, get) => ({
       if (!response.ok) {
         throw new Error('Failed to fetch mortgages');
       }
-      const mortgages = await response.json();
+      const rawMortgages = await response.json();
+
+      // Transform snake_case to camelCase
+      const mortgages = rawMortgages.map((m: any) => ({
+        id: m.id,
+        userId: m.user_id,
+        principal: m.principal,
+        currentBalance: m.current_balance,
+        interestRate: m.interest_rate,
+        monthlyPayment: m.monthly_payment,
+        startDate: m.start_date,
+        termMonths: m.term_months,
+        monthlyIncome: m.monthly_income,
+        monthlyExpenses: m.monthly_expenses,
+        createdAt: m.created_at,
+        updatedAt: m.updated_at,
+      }));
 
       // Set the first mortgage as active if we have any
       if (mortgages.length > 0) {

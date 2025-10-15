@@ -172,7 +172,7 @@ export const Calculator: React.FC = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis
-                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                tickFormatter={(value) => `$${((value ?? 0) / 1000).toFixed(0)}k`}
               />
               <Tooltip
                 formatter={(value: number) => formatCurrency(value)}

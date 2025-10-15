@@ -387,7 +387,7 @@ export const Setup: React.FC = () => {
               <div className="p-4 bg-primary/10 rounded-lg border-2 border-primary">
                 <p className="text-sm text-gray-700 mb-1">Estimated Monthly Payment</p>
                 <p className="text-3xl font-bold text-primary">
-                  ${calculatedPayment.toFixed(2)}
+                  ${(calculatedPayment ?? 0).toFixed(2)}
                 </p>
                 <p className="text-xs text-gray-600 mt-1">
                   Principal & Interest only (excludes taxes and insurance)

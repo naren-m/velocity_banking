@@ -38,6 +38,8 @@ def create_app():
     # Import all models first (required for SQLAlchemy relationships)
     from models.user_flask import User
     from models.mortgage_flask import Mortgage
+    from models.heloc_flask import Heloc
+    from models.payment_flask import Payment
 
     # Initialize database
     with app.app_context():
@@ -47,10 +49,18 @@ def create_app():
     from controllers.mortgage_controller_flask import mortgage_bp
     from controllers.optimization_controller import optimization_bp
     from controllers.user_controller_flask import user_bp
+    from controllers.heloc_controller_flask import heloc_bp
+    from controllers.payment_controller_flask import payment_bp
+    from controllers.calculation_controller_flask import calculation_bp
+    from controllers.investment_controller_flask import investment_bp
 
     app.register_blueprint(mortgage_bp, url_prefix="/api/mortgages")
     app.register_blueprint(optimization_bp, url_prefix="/api/optimize")
     app.register_blueprint(user_bp, url_prefix="/api/users")
+    app.register_blueprint(heloc_bp, url_prefix="/api/helocs")
+    app.register_blueprint(payment_bp, url_prefix="/api/payments")
+    app.register_blueprint(calculation_bp, url_prefix="/api/calculate")
+    app.register_blueprint(investment_bp, url_prefix="/api/investment")
 
     # Health check endpoint
     @app.route("/health")

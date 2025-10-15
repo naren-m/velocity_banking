@@ -171,17 +171,49 @@ export const helocApi = {
     interestRate: number;
     minimumPayment: number;
   }): Promise<Heloc> => {
+    // Transform camelCase to snake_case for backend
+    const payload = {
+      mortgage_id: data.mortgageId,
+      credit_limit: data.creditLimit,
+      current_balance: data.currentBalance,
+      interest_rate: data.interestRate,
+      minimum_payment: data.minimumPayment,
+    };
     const response = await fetch(`${API_BASE}/helocs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
-    return handleResponse(response);
+    const rawHeloc = await handleResponse<any>(response);
+
+    // Transform snake_case to camelCase
+    return {
+      id: rawHeloc.id,
+      mortgageId: rawHeloc.mortgage_id,
+      creditLimit: rawHeloc.credit_limit,
+      currentBalance: rawHeloc.current_balance,
+      interestRate: rawHeloc.interest_rate,
+      minimumPayment: rawHeloc.minimum_payment,
+      createdAt: rawHeloc.created_at,
+      updatedAt: rawHeloc.updated_at,
+    };
   },
 
   getByMortgage: async (mortgageId: string): Promise<Heloc> => {
     const response = await fetch(`${API_BASE}/helocs/mortgage/${mortgageId}`);
-    return handleResponse(response);
+    const rawHeloc = await handleResponse<any>(response);
+
+    // Transform snake_case to camelCase
+    return {
+      id: rawHeloc.id,
+      mortgageId: rawHeloc.mortgage_id,
+      creditLimit: rawHeloc.credit_limit,
+      currentBalance: rawHeloc.current_balance,
+      interestRate: rawHeloc.interest_rate,
+      minimumPayment: rawHeloc.minimum_payment,
+      createdAt: rawHeloc.created_at,
+      updatedAt: rawHeloc.updated_at,
+    };
   },
 
   update: async (id: string, data: Partial<Heloc>): Promise<Heloc> => {
@@ -197,10 +229,15 @@ export const helocApi = {
     mortgageId: string;
     chunkAmount: number;
   }): Promise<HelocStrategy> => {
+    // Transform camelCase to snake_case for backend
+    const payload = {
+      mortgage_id: data.mortgageId,
+      chunk_amount: data.chunkAmount,
+    };
     const response = await fetch(`${API_BASE}/helocs/calculate-strategy`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
     return handleResponse(response);
   },

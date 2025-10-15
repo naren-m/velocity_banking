@@ -1,16 +1,25 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMortgageStore } from '../../stores/mortgageStore';
+import { useUserStore } from '../../stores/userStore';
 import { OptimalStrategyResult } from '../../types';
 
 export const TargetYearStrategy = () => {
   const navigate = useNavigate();
-  const { mortgage} = useMortgageStore();
+  const { user } = useUserStore();
+  const { mortgage, fetchMortgagesByUser } = useMortgageStore();
   const [targetYears, setTargetYears] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<OptimalStrategyResult | null>(null);
   const [expandedScenario, setExpandedScenario] = useState<number | null>(null);
+
+  // Fetch mortgage data when component mounts
+  useEffect(() => {
+    if (user && !mortgage) {
+      fetchMortgagesByUser(user.id);
+    }
+  }, [user, mortgage, fetchMortgagesByUser]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

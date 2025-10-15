@@ -25,6 +25,7 @@ class Mortgage(db.Model):
 
     # Relationships
     user = db.relationship("User", back_populates="mortgages")
+    helocs = db.relationship("Heloc", back_populates="mortgage", cascade="all, delete-orphan")
 
     def to_dict(self):
         """Convert to dictionary."""

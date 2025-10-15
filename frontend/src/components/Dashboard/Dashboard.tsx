@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMortgageStore } from '../../stores/mortgageStore';
 import { useUserStore } from '../../stores/userStore';
 import { Card, CardHeader } from '../shared/Card';
 import { Button } from '../shared/Button';
 import { formatCurrency, formatMonths, formatPercent } from '../../utils/formatters';
 import { useNavigate } from 'react-router-dom';
+import { HelocModal } from '../HelocModal/HelocModal';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useUserStore();
   const { mortgage, heloc, mortgages, comparison, payments, loading, fetchPayments, fetchMortgagesByUser, fetchHeloc } = useMortgageStore();
+  const [isHelocModalOpen, setIsHelocModalOpen] = useState(false);
 
   // Fetch user's mortgages when component mounts
   useEffect(() => {
@@ -231,7 +233,7 @@ export const Dashboard: React.FC = () => {
               <Button variant="primary" onClick={() => navigate('/calculator')}>
                 Calculate Scenarios
               </Button>
-              <Button variant="secondary" onClick={() => navigate('/setup')}>
+              <Button variant="secondary" onClick={() => setIsHelocModalOpen(true)}>
                 Add HELOC Details
               </Button>
             </>
@@ -303,6 +305,11 @@ export const Dashboard: React.FC = () => {
           </div>
         )}
       </Card>
+
+      <HelocModal
+        isOpen={isHelocModalOpen}
+        onClose={() => setIsHelocModalOpen(false)}
+      />
     </div>
   );
 };

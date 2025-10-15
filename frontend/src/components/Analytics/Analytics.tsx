@@ -184,7 +184,7 @@ const Analytics: React.FC = () => {
               <div>
                 <p className="text-gray-600 text-sm">Memory Usage</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {systemHealth.memory.usagePercent.toFixed(1)}%
+                  {systemHealth.memory.usagePercent?.toFixed(1) ?? '0.0'}%
                 </p>
               </div>
               <div>
@@ -275,7 +275,7 @@ const Analytics: React.FC = () => {
               <div>
                 <p className="text-gray-600 text-sm">Avg Interest Rate</p>
                 <p className="text-xl font-bold text-gray-700">
-                  {dashboardMetrics.mortgages.avgInterestRate.toFixed(2)}%
+                  {dashboardMetrics.mortgages.avgInterestRate?.toFixed(2) ?? '0.00'}%
                 </p>
               </div>
             </div>
@@ -336,7 +336,7 @@ const Analytics: React.FC = () => {
                     cy="50%"
                     labelLine={false}
                     label={({ type, percent }) =>
-                      `${type}: ${(percent * 100).toFixed(0)}%`
+                      `${type}: ${((percent ?? 0) * 100).toFixed(0)}%`
                     }
                     outerRadius={100}
                     fill="#8884d8"

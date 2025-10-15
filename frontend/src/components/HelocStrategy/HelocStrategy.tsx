@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMortgageStore } from '../../stores/mortgageStore';
+import { useUserStore } from '../../stores/userStore';
 import { Card, CardHeader } from '../shared/Card';
 import { Button } from '../shared/Button';
 import { formatCurrency, formatMonths } from '../../utils/formatters';
@@ -8,7 +9,8 @@ import { formatCurrency, formatMonths } from '../../utils/formatters';
 export const HelocStrategy: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { mortgage, heloc, helocStrategy, loading, error, calculateHelocStrategy, fetchHeloc } = useMortgageStore();
+  const { user } = useUserStore();
+  const { mortgage, heloc, helocStrategy, loading, error, calculateHelocStrategy, fetchHeloc, fetchMortgagesByUser } = useMortgageStore();
 
   // Check if we have a selected chunk amount from optimal strategy
   const selectedChunkAmount = (location.state as any)?.selectedChunkAmount;
@@ -16,6 +18,13 @@ export const HelocStrategy: React.FC = () => {
 
   const [chunkAmount, setChunkAmount] = useState(selectedChunkAmount || 10000);
   const [showAllCycles, setShowAllCycles] = useState(false);
+
+  // Fetch mortgage data when component mounts
+  useEffect(() => {
+    if (user && !mortgage) {
+      fetchMortgagesByUser(user.id);
+    }
+  }, [user, mortgage, fetchMortgagesByUser]);
 
   useEffect(() => {
     if (mortgage && !heloc) {
@@ -35,7 +44,14 @@ export const HelocStrategy: React.FC = () => {
       <div className="max-w-7xl mx-auto p-6">
         <Card>
           <CardHeader title="No Mortgage Found" />
-          <p className="text-gray-600">Please create a mortgage first.</p>
+          <p className="text-gray-600">
+            {loading ? 'Loading mortgage data...' : 'Please create a mortgage first.'}
+          </p>
+          {!loading && (
+            <Button onClick={() => navigate('/setup')} className="mt-4">
+              Create Mortgage
+            </Button>
+          )}
         </Card>
       </div>
     );
@@ -192,7 +208,7 @@ export const HelocStrategy: React.FC = () => {
                   {formatCurrency(chunkAmount)}
                 </span>
                 <span className="text-sm text-gray-600">
-                  ${Math.min(50, heloc.creditLimit / 1000).toFixed(0)}K
+                  ${Math.min(50, (heloc?.creditLimit ?? 0) / 1000).toFixed(0)}K
                 </span>
               </div>
             </div>

@@ -94,6 +94,10 @@ def update_mortgage(mortgage_id):
             mortgage.monthly_payment = float(data["monthly_payment"])
         if "interest_rate" in data:
             mortgage.interest_rate = float(data["interest_rate"])
+        if "monthly_income" in data:
+            mortgage.monthly_income = float(data["monthly_income"]) if data["monthly_income"] else None
+        if "monthly_expenses" in data:
+            mortgage.monthly_expenses = float(data["monthly_expenses"]) if data["monthly_expenses"] else None
 
         db.session.commit()
 

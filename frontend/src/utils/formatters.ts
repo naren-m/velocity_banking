@@ -1,4 +1,7 @@
-export const formatCurrency = (amount: number): string => {
+export const formatCurrency = (amount: number | null | undefined): string => {
+  if (amount == null || isNaN(amount)) {
+    return '$0';
+  }
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -7,11 +10,17 @@ export const formatCurrency = (amount: number): string => {
   }).format(amount);
 };
 
-export const formatPercent = (value: number): string => {
+export const formatPercent = (value: number | null | undefined): string => {
+  if (value == null || isNaN(value)) {
+    return '0.00%';
+  }
   return `${value.toFixed(2)}%`;
 };
 
-export const formatMonths = (months: number): string => {
+export const formatMonths = (months: number | null | undefined): string => {
+  if (months == null || isNaN(months)) {
+    return '0 months';
+  }
   const years = Math.floor(months / 12);
   const remainingMonths = months % 12;
 

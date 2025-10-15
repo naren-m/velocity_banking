@@ -6,7 +6,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const { user, setUser } = useUserStore();
 
-  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,8 +21,8 @@ export const Login = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!username.trim()) {
-      setError('Please enter your username');
+    if (!email.trim()) {
+      setError('Please enter your email');
       return;
     }
 
@@ -39,7 +39,7 @@ export const Login = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: username.toLowerCase().trim(),
+          email: email.toLowerCase().trim(),
           password: password
         }),
       });
@@ -52,7 +52,7 @@ export const Login = () => {
       const data = await response.json();
 
       // Save user to store (persisted to localStorage)
-      setUser(data.user);
+      setUser(data);
 
       // Navigate to dashboard
       navigate('/dashboard');
@@ -88,15 +88,15 @@ export const Login = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Username
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email
               </label>
               <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="your username"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 required
                 disabled={loading}

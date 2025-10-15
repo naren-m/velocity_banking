@@ -1,18 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMortgageStore } from '../../stores/mortgageStore';
+import { useUserStore } from '../../stores/userStore';
 import { OptimalStrategyResult, StrategyScenario } from '../../types';
 
 export const OptimalStrategy = () => {
   const navigate = useNavigate();
-  const { mortgage } = useMortgageStore();
+  const { user } = useUserStore();
+  const { mortgage, fetchMortgagesByUser } = useMortgageStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<OptimalStrategyResult | null>(null);
 
+  // Fetch mortgage data when component mounts
+  useEffect(() => {
+    if (user && !mortgage) {
+      fetchMortgagesByUser(user.id);
+    }
+  }, [user, mortgage, fetchMortgagesByUser]);
+
   useEffect(() => {
     if (!mortgage) {
-      navigate('/setup');
+      setLoading(false);
       return;
     }
 
