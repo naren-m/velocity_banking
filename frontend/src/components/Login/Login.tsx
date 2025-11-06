@@ -1,10 +1,12 @@
 import { useState, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../stores/userStore';
+import { useMortgageStore } from '../../stores/mortgageStore';
 
 export const Login = () => {
   const navigate = useNavigate();
   const { user, setUser } = useUserStore();
+  const { fetchMortgagesByUser } = useMortgageStore();
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -49,10 +51,18 @@ export const Login = () => {
         throw new Error(errorData.error || 'Login failed');
       }
 
-      const data = await response.json();
+      const userData = await response.json();
 
       // Save user to store (persisted to localStorage)
-      setUser(data);
+      setUser(userData);
+
+      // Fetch user's mortgages which will also trigger HELOC fetching in Dashboard
+      try {
+        await fetchMortgagesByUser(userData.id);
+      } catch (mortgageError) {
+        console.warn('Failed to fetch mortgages on login:', mortgageError);
+        // Don't block login if mortgage fetching fails
+      }
 
       // Navigate to dashboard
       navigate('/dashboard');

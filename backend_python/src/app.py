@@ -62,9 +62,31 @@ def create_app():
     app.register_blueprint(calculation_bp, url_prefix="/api/calculate")
     app.register_blueprint(investment_bp, url_prefix="/api/investment")
 
-    # Health check endpoint
-    @app.route("/health")
+    # Health check endpoint for Kubernetes
+    @app.route("/api/health")
     def health_check():
+        try:
+            # Test database connectivity
+            from sqlalchemy import text
+            db.session.execute(text('SELECT 1'))
+            db.session.commit()
+            
+            return jsonify({
+                "status": "healthy",
+                "database": "connected",
+                "version": "2.0.0"
+            }), 200
+        except Exception as e:
+            logger.error(f"Health check failed: {str(e)}")
+            return jsonify({
+                "status": "unhealthy",
+                "database": "disconnected",
+                "error": str(e)
+            }), 500
+
+    # Simple health check endpoint
+    @app.route("/health")
+    def simple_health_check():
         return jsonify({"status": "ok"})
 
     # Root endpoint

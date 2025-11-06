@@ -90,21 +90,81 @@ export const OptimalStrategy = () => {
   }
 
   if (error) {
+    const isIncomeExpensesError = error.includes('Monthly income and expenses are required');
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
         <div className="max-w-7xl mx-auto">
           <button
-            onClick={() => navigate('/heloc-strategy')}
+            onClick={() => navigate('/dashboard')}
             className="mb-6 flex items-center gap-2 text-indigo-600 hover:text-indigo-700"
           >
-            ← <span>Back to HELOC Strategy</span>
+            ← <span>Back to Dashboard</span>
           </button>
 
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <div className="flex items-center gap-3 text-red-600 mb-4">
-              <h2 className="text-xl font-semibold">Error</h2>
-            </div>
-            <p className="text-gray-700">{error}</p>
+            {isIncomeExpensesError ? (
+              <>
+                <div className="flex items-center gap-3 text-amber-600 mb-6">
+                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">💰</span>
+                  </div>
+                  <h2 className="text-2xl font-semibold">Financial Information Required</h2>
+                </div>
+                <div className="mb-6">
+                  <p className="text-gray-700 text-lg mb-4">
+                    To calculate optimal velocity banking strategies, we need your monthly income and expenses information.
+                  </p>
+                  <p className="text-gray-600 mb-6">
+                    This helps us determine your net cashflow and recommend the best chunk amounts for your HELOC strategy.
+                  </p>
+                </div>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-3">What we need:</h3>
+                  <ul className="space-y-2 text-blue-800">
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      Monthly gross income
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      Monthly expenses (excluding mortgage payment)
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => navigate('/setup', { state: { updateMortgage: mortgage } })}
+                    className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+                  >
+                    Add Financial Information
+                  </button>
+                  <button
+                    onClick={() => navigate('/dashboard')}
+                    className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                  >
+                    Back to Dashboard
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-3 text-red-600 mb-4">
+                  <h2 className="text-xl font-semibold">Error</h2>
+                </div>
+                <p className="text-gray-700">{error}</p>
+                <div className="mt-6">
+                  <button
+                    onClick={() => navigate('/dashboard')}
+                    className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+                  >
+                    Back to Dashboard
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

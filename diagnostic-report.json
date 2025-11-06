@@ -1,0 +1,496 @@
+{
+  "timestamp": "2025-11-02T08:06:03.774Z",
+  "summary": {
+    "totalBrowsersTested": 3,
+    "successfulLoads": 3,
+    "totalErrors": 0,
+    "totalFailedRequests": 0,
+    "reactDetected": true
+  },
+  "results": [
+    {
+      "browser": "chromium",
+      "url": "https://velocitybanking.naren.me",
+      "timestamp": "2025-11-02T08:05:50.037Z",
+      "accessibility": {
+        "loaded": true,
+        "title": "Velocity Banking",
+        "loadTime": 1520,
+        "finalUrl": "https://velocitybanking.naren.me/"
+      },
+      "console": {
+        "errors": [],
+        "warnings": [
+          {
+            "type": "warning",
+            "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation",
+            "location": {
+              "url": "https://cdn.tailwindcss.com/",
+              "lineNumber": 63,
+              "columnNumber": 1710
+            },
+            "timestamp": "2025-11-02T08:05:50.622Z"
+          }
+        ],
+        "logs": []
+      },
+      "network": {
+        "requests": [
+          {
+            "url": "https://velocitybanking.naren.me/",
+            "method": "GET",
+            "resourceType": "document",
+            "timestamp": "2025-11-02T08:05:50.047Z"
+          },
+          {
+            "url": "https://unpkg.com/react@18/umd/react.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.265Z"
+          },
+          {
+            "url": "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.265Z"
+          },
+          {
+            "url": "https://unpkg.com/react-router-dom@6.21.1/dist/umd/react-router-dom.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.265Z"
+          },
+          {
+            "url": "https://unpkg.com/zustand@4.4.7/esm/index.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.265Z"
+          },
+          {
+            "url": "https://cdn.tailwindcss.com/",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.265Z"
+          },
+          {
+            "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+            "method": "GET",
+            "resourceType": "stylesheet",
+            "timestamp": "2025-11-02T08:05:50.265Z"
+          },
+          {
+            "url": "https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.265Z"
+          },
+          {
+            "url": "https://cdn.tailwindcss.com/3.4.17",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.377Z"
+          },
+          {
+            "url": "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.479Z"
+          },
+          {
+            "url": "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.527Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/challenge-platform/scripts/jsd/main.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.714Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/rum?",
+            "method": "POST",
+            "resourceType": "xhr",
+            "timestamp": "2025-11-02T08:05:50.716Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/challenge-platform/h/b/scripts/jsd/e8e65e95f26d/main.js?",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:50.735Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/challenge-platform/h/b/jsd/r/0.7307084528435529:1762067578:ALrFLC_VYsBk_oKX5apzkyNW0os1eGt00jk9Lxv_bVU/9982210d3911cee5",
+            "method": "POST",
+            "resourceType": "xhr",
+            "timestamp": "2025-11-02T08:05:51.028Z"
+          }
+        ],
+        "failedRequests": [],
+        "slowRequests": [
+          {
+            "url": "https://velocitybanking.naren.me/",
+            "method": "GET",
+            "resourceType": "document",
+            "timestamp": "2025-11-02T08:05:50.047Z"
+          }
+        ],
+        "responseStatus": {
+          "200xx": 11,
+          "300xx": 4
+        }
+      },
+      "security": {
+        "corsErrors": [],
+        "cspErrors": [],
+        "securityHeaders": {}
+      },
+      "react": {
+        "detected": true,
+        "components": [
+          "detected",
+          "checks",
+          "rootElement",
+          "reactDevTools",
+          "windowReact"
+        ],
+        "errors": []
+      },
+      "performance": {
+        "loadEventTime": 0,
+        "domContentLoadedTime": 0.6999998092651367,
+        "totalLoadTime": 0,
+        "firstContentfulPaint": 0,
+        "largestContentfulPaint": 0
+      },
+      "screenshots": {
+        "initial": "screenshots/chromium-initial.png",
+        "afterLoad": "screenshots/chromium-loaded.png"
+      }
+    },
+    {
+      "browser": "firefox",
+      "url": "https://velocitybanking.naren.me",
+      "timestamp": "2025-11-02T08:05:54.792Z",
+      "accessibility": {
+        "loaded": true,
+        "title": "Velocity Banking",
+        "loadTime": 1313,
+        "finalUrl": "https://velocitybanking.naren.me/"
+      },
+      "console": {
+        "errors": [],
+        "warnings": [
+          {
+            "type": "warning",
+            "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation",
+            "location": {
+              "url": "https://cdn.tailwindcss.com/",
+              "lineNumber": 63,
+              "columnNumber": 1710
+            },
+            "timestamp": "2025-11-02T08:05:55.425Z"
+          }
+        ],
+        "logs": []
+      },
+      "network": {
+        "requests": [
+          {
+            "url": "https://velocitybanking.naren.me/",
+            "method": "GET",
+            "resourceType": "document",
+            "timestamp": "2025-11-02T08:05:54.803Z"
+          },
+          {
+            "url": "https://unpkg.com/react@18/umd/react.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:54.935Z"
+          },
+          {
+            "url": "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:54.935Z"
+          },
+          {
+            "url": "https://unpkg.com/react-router-dom@6.21.1/dist/umd/react-router-dom.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:54.935Z"
+          },
+          {
+            "url": "https://unpkg.com/zustand@4.4.7/esm/index.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:54.935Z"
+          },
+          {
+            "url": "https://cdn.tailwindcss.com/",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:54.935Z"
+          },
+          {
+            "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+            "method": "GET",
+            "resourceType": "stylesheet",
+            "timestamp": "2025-11-02T08:05:54.935Z"
+          },
+          {
+            "url": "https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:54.935Z"
+          },
+          {
+            "url": "https://cdn.tailwindcss.com/3.4.17",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:55.013Z"
+          },
+          {
+            "url": "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:55.168Z"
+          },
+          {
+            "url": "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:55.289Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/challenge-platform/scripts/jsd/main.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:55.477Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/rum?",
+            "method": "POST",
+            "resourceType": "xhr",
+            "timestamp": "2025-11-02T08:05:55.478Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/challenge-platform/h/b/scripts/jsd/e8e65e95f26d/main.js?",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:55.506Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/challenge-platform/h/b/jsd/r/0.7307084528435529:1762067578:ALrFLC_VYsBk_oKX5apzkyNW0os1eGt00jk9Lxv_bVU/9982212a8aa4ed40",
+            "method": "POST",
+            "resourceType": "xhr",
+            "timestamp": "2025-11-02T08:05:55.572Z"
+          }
+        ],
+        "failedRequests": [],
+        "slowRequests": [
+          {
+            "url": "https://velocitybanking.naren.me/",
+            "method": "GET",
+            "resourceType": "document",
+            "timestamp": "2025-11-02T08:05:54.803Z"
+          }
+        ],
+        "responseStatus": {
+          "200xx": 11,
+          "300xx": 4
+        }
+      },
+      "security": {
+        "corsErrors": [],
+        "cspErrors": [],
+        "securityHeaders": {}
+      },
+      "react": {
+        "detected": true,
+        "components": [
+          "detected",
+          "checks",
+          "rootElement",
+          "reactDevTools",
+          "windowReact"
+        ],
+        "errors": []
+      },
+      "performance": {
+        "loadEventTime": 0,
+        "domContentLoadedTime": 0.5,
+        "totalLoadTime": 0,
+        "firstContentfulPaint": 0,
+        "largestContentfulPaint": 0
+      },
+      "screenshots": {
+        "initial": "screenshots/firefox-initial.png",
+        "afterLoad": "screenshots/firefox-loaded.png"
+      }
+    },
+    {
+      "browser": "webkit",
+      "url": "https://velocitybanking.naren.me",
+      "timestamp": "2025-11-02T08:05:59.374Z",
+      "accessibility": {
+        "loaded": true,
+        "title": "Velocity Banking",
+        "loadTime": 1296,
+        "finalUrl": "https://velocitybanking.naren.me/"
+      },
+      "console": {
+        "errors": [],
+        "warnings": [
+          {
+            "type": "warning",
+            "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation",
+            "location": {
+              "url": "https://cdn.tailwindcss.com/",
+              "lineNumber": 63,
+              "columnNumber": 1710
+            },
+            "timestamp": "2025-11-02T08:05:59.942Z"
+          }
+        ],
+        "logs": []
+      },
+      "network": {
+        "requests": [
+          {
+            "url": "https://velocitybanking.naren.me/",
+            "method": "GET",
+            "resourceType": "document",
+            "timestamp": "2025-11-02T08:05:59.380Z"
+          },
+          {
+            "url": "https://unpkg.com/react@18/umd/react.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.487Z"
+          },
+          {
+            "url": "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.487Z"
+          },
+          {
+            "url": "https://unpkg.com/react-router-dom@6.21.1/dist/umd/react-router-dom.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.487Z"
+          },
+          {
+            "url": "https://unpkg.com/zustand@4.4.7/esm/index.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.487Z"
+          },
+          {
+            "url": "https://cdn.tailwindcss.com/",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.487Z"
+          },
+          {
+            "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+            "method": "GET",
+            "resourceType": "stylesheet",
+            "timestamp": "2025-11-02T08:05:59.487Z"
+          },
+          {
+            "url": "https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.491Z"
+          },
+          {
+            "url": "https://cdn.tailwindcss.com/3.4.17",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.569Z"
+          },
+          {
+            "url": "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.686Z"
+          },
+          {
+            "url": "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.794Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/challenge-platform/scripts/jsd/main.js",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:05:59.995Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/rum?",
+            "method": "POST",
+            "resourceType": "xhr",
+            "timestamp": "2025-11-02T08:05:59.997Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/challenge-platform/h/b/scripts/jsd/e8e65e95f26d/main.js?",
+            "method": "GET",
+            "resourceType": "script",
+            "timestamp": "2025-11-02T08:06:00.016Z"
+          },
+          {
+            "url": "https://velocitybanking.naren.me/cdn-cgi/challenge-platform/h/b/jsd/r/0.7307084528435529:1762067578:ALrFLC_VYsBk_oKX5apzkyNW0os1eGt00jk9Lxv_bVU/998221471cb9cf2f",
+            "method": "POST",
+            "resourceType": "xhr",
+            "timestamp": "2025-11-02T08:06:00.098Z"
+          }
+        ],
+        "failedRequests": [],
+        "slowRequests": [
+          {
+            "url": "https://velocitybanking.naren.me/",
+            "method": "GET",
+            "resourceType": "document",
+            "timestamp": "2025-11-02T08:05:59.380Z"
+          }
+        ],
+        "responseStatus": {
+          "200xx": 11,
+          "300xx": 4
+        }
+      },
+      "security": {
+        "corsErrors": [],
+        "cspErrors": [],
+        "securityHeaders": {}
+      },
+      "react": {
+        "detected": true,
+        "components": [
+          "detected",
+          "checks",
+          "rootElement",
+          "reactDevTools",
+          "windowReact"
+        ],
+        "errors": []
+      },
+      "performance": {
+        "loadEventTime": 0,
+        "domContentLoadedTime": 0.5,
+        "totalLoadTime": 0,
+        "firstContentfulPaint": 0,
+        "largestContentfulPaint": 0
+      },
+      "screenshots": {
+        "initial": "screenshots/webkit-initial.png",
+        "afterLoad": "screenshots/webkit-loaded.png"
+      }
+    }
+  ],
+  "recommendations": []
+}

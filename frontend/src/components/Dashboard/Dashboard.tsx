@@ -65,6 +65,8 @@ export const Dashboard: React.FC = () => {
     );
   }
 
+  const hasFinancialData = mortgage.monthlyIncome && mortgage.monthlyExpenses;
+  
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -72,12 +74,38 @@ export const Dashboard: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Welcome back, {user.name}!</h1>
           <p className="text-gray-600 mt-1">Here's your velocity banking overview</p>
         </div>
-        {heloc && (
+        {heloc && hasFinancialData && (
           <Button variant="primary" onClick={() => navigate('/optimal-strategy')}>
             View Optimal Strategies
           </Button>
         )}
       </div>
+
+      {/* Financial Information Missing Alert */}
+      {heloc && !hasFinancialData && (
+        <Card className="bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+              <span className="text-2xl">💰</span>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-amber-900 mb-1">
+                Complete Your Financial Profile
+              </h3>
+              <p className="text-amber-800 mb-3">
+                Add your monthly income and expenses to unlock optimal velocity banking strategies.
+              </p>
+              <Button 
+                variant="primary" 
+                onClick={() => navigate('/setup', { state: { updateMortgage: mortgage } })}
+                className="bg-amber-600 hover:bg-amber-700"
+              >
+                Add Financial Information
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Financial Profile Summary */}
       {(mortgage.monthlyIncome || mortgage.monthlyExpenses) && (
@@ -221,9 +249,19 @@ export const Dashboard: React.FC = () => {
               <Button variant="primary" onClick={() => navigate('/heloc-strategy')}>
                 HELOC Strategy Calculator
               </Button>
-              <Button variant="success" onClick={() => navigate('/optimal-strategy')}>
-                View Optimal Strategies
-              </Button>
+              {hasFinancialData ? (
+                <Button variant="success" onClick={() => navigate('/optimal-strategy')}>
+                  View Optimal Strategies
+                </Button>
+              ) : (
+                <Button 
+                  variant="secondary" 
+                  onClick={() => navigate('/setup', { state: { updateMortgage: mortgage } })}
+                  title="Add monthly income and expenses to unlock optimal strategies"
+                >
+                  Complete Financial Profile
+                </Button>
+              )}
               <Button variant="secondary" onClick={() => navigate('/calculator')}>
                 Standard Calculator
               </Button>
