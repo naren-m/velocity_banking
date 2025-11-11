@@ -27,7 +27,7 @@ class Colors:
 
 class VelocityBankingDashboard:
     def __init__(self):
-        self.base_url = "https://velocitybanking.naren.me"
+        self.base_url = "https://velocity-banking.naren.me"
         self.cloudflare_ip = "172.67.154.54"
         self.domain = "velocitybanking.naren.me"
         self.check_history = []
