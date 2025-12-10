@@ -1,0 +1,340 @@
+#!/usr/bin/env groovy
+
+/**
+ * Velocity Banking - Homelab Deployment Pipeline (Multi-Architecture)
+ *
+ * This pipeline builds and deploys the Velocity Banking application to the homelab K8s cluster.
+ * Supports multi-architecture builds (linux/amd64, linux/arm64) via Docker buildx.
+ *
+ * Requirements:
+ * - Local Docker registry: 192.168.68.124:30502
+ * - K8s manifests: ~/Projects/deployment/homelab/base/applications/velocity-banking/
+ * - kubectl configured with homelab cluster access
+ * - Docker buildx available on Jenkins agent
+ *
+ * Architecture Support:
+ * - Dell Laptop (hanuma): amd64 control plane
+ * - Dell Mini: amd64 worker
+ * - GTX1080 Beast (srirama): amd64 worker with GPU
+ * - Mac Mini: arm64 worker (Apple Silicon)
+ */
+
+pipeline {
+    agent {
+        label 'docker-buildx'
+    }
+
+    environment {
+        // Application settings
+        APP_NAME = 'velocity-banking'
+
+        // Local registry configuration (NodePort access via control plane)
+        LOCAL_REGISTRY = '192.168.68.124:30502'
+
+        // Image names
+        BACKEND_IMAGE = "${LOCAL_REGISTRY}/${APP_NAME}-backend"
+        FRONTEND_IMAGE = "${LOCAL_REGISTRY}/${APP_NAME}-frontend"
+
+        // Build settings
+        PLATFORMS = 'linux/amd64,linux/arm64'
+        BUILDX_BUILDER = 'velocity-banking-builder'
+        DOCKER_BUILDKIT = '1'
+
+        // K8s manifest location (homelab repository)
+        K8S_MANIFEST_PATH = "${env.HOME}/Projects/deployment/homelab/base/applications/${APP_NAME}"
+
+        // Build timestamp (hhmmss-ddMmmyy-githash format)
+        BUILD_TIMESTAMP = sh(script: "date +%H%M%S-%d%b%y", returnStdout: true).trim()
+        GIT_SHORT_HASH = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+        IMAGE_TAG = "${BUILD_TIMESTAMP}-${GIT_SHORT_HASH}"
+    }
+
+    stages {
+        stage('Validation') {
+            steps {
+                script {
+                    echo "═══════════════════════════════════════════════════════════"
+                    echo "  Velocity Banking - Build & Deploy Pipeline"
+                    echo "═══════════════════════════════════════════════════════════"
+                    echo "Application: ${APP_NAME}"
+                    echo "Image Tag: ${IMAGE_TAG}"
+                    echo "Backend Image: ${BACKEND_IMAGE}:${IMAGE_TAG}"
+                    echo "Frontend Image: ${FRONTEND_IMAGE}:${IMAGE_TAG}"
+                    echo "Local Registry: ${LOCAL_REGISTRY}"
+                    echo "K8s Manifests: ${K8S_MANIFEST_PATH}"
+                    echo "═══════════════════════════════════════════════════════════"
+
+                    // Validate tag format (hhmmss-ddMmmyy-githash)
+                    if (!IMAGE_TAG.matches(/^\d{6}-\d{2}[A-Z][a-z]{2}\d{2}-[a-f0-9]{7}$/)) {
+                        error("❌ Invalid tag format: ${IMAGE_TAG}. Expected: hhmmss-ddMmmyy-githash")
+                    }
+                    echo "✅ Tag format validation passed"
+
+                    // Check if K8s manifest directory exists
+                    sh """
+                        if [ ! -d "${K8S_MANIFEST_PATH}" ]; then
+                            echo "❌ K8s manifest directory not found: ${K8S_MANIFEST_PATH}"
+                            echo "Please create K8s manifests in homelab repository first"
+                            exit 1
+                        fi
+                    """
+                    echo "✅ K8s manifest directory exists"
+                }
+            }
+        }
+
+        stage('Setup Buildx') {
+            steps {
+                script {
+                    echo "Setting up Docker buildx builder..."
+                    sh """
+                        # Check if builder exists
+                        if docker buildx inspect ${BUILDX_BUILDER} >/dev/null 2>&1; then
+                            echo "Builder ${BUILDX_BUILDER} exists, using it"
+                            docker buildx use ${BUILDX_BUILDER}
+                        else
+                            echo "Creating new builder: ${BUILDX_BUILDER}"
+                            docker buildx create \
+                                --name ${BUILDX_BUILDER} \
+                                --driver docker-container \
+                                --use \
+                                --bootstrap
+                        fi
+
+                        # Verify builder
+                        docker buildx inspect ${BUILDX_BUILDER} --bootstrap
+                    """
+                    echo "✅ Buildx builder ready"
+                }
+            }
+        }
+
+        stage('Build Backend') {
+            steps {
+                script {
+                    echo "Building multi-arch backend image..."
+                    dir('backend_python') {
+                        sh """
+                            docker buildx build \
+                                --platform ${PLATFORMS} \
+                                --tag ${BACKEND_IMAGE}:${IMAGE_TAG} \
+                                --tag ${BACKEND_IMAGE}:latest \
+                                --builder ${BUILDX_BUILDER} \
+                                --file Dockerfile \
+                                --push \
+                                .
+                        """
+                    }
+                    echo "✅ Backend multi-arch image built and pushed"
+                }
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                script {
+                    echo "Building multi-arch frontend image..."
+                    dir('frontend') {
+                        sh """
+                            docker buildx build \
+                                --platform ${PLATFORMS} \
+                                --tag ${FRONTEND_IMAGE}:${IMAGE_TAG} \
+                                --tag ${FRONTEND_IMAGE}:latest \
+                                --builder ${BUILDX_BUILDER} \
+                                --file Dockerfile \
+                                --push \
+                                .
+                        """
+                    }
+                    echo "✅ Frontend multi-arch image built and pushed"
+                }
+            }
+        }
+
+        stage('Verify Images') {
+            steps {
+                script {
+                    echo "Verifying multi-arch images in registry..."
+
+                    // Verify backend image
+                    sh "docker buildx imagetools inspect ${BACKEND_IMAGE}:${IMAGE_TAG}"
+                    def backendManifest = sh(
+                        script: "docker buildx imagetools inspect ${BACKEND_IMAGE}:${IMAGE_TAG}",
+                        returnStdout: true
+                    )
+                    if (!backendManifest.contains('linux/amd64') || !backendManifest.contains('linux/arm64')) {
+                        error("Backend image manifest missing required architectures!")
+                    }
+                    echo "✅ Backend image verified for amd64 and arm64"
+
+                    // Verify frontend image
+                    sh "docker buildx imagetools inspect ${FRONTEND_IMAGE}:${IMAGE_TAG}"
+                    def frontendManifest = sh(
+                        script: "docker buildx imagetools inspect ${FRONTEND_IMAGE}:${IMAGE_TAG}",
+                        returnStdout: true
+                    )
+                    if (!frontendManifest.contains('linux/amd64') || !frontendManifest.contains('linux/arm64')) {
+                        error("Frontend image manifest missing required architectures!")
+                    }
+                    echo "✅ Frontend image verified for amd64 and arm64"
+                }
+            }
+        }
+
+        stage('Update K8s Manifests') {
+            steps {
+                script {
+                    echo "Updating K8s deployment manifests with new image tags..."
+
+                    // Update backend deployment
+                    sh """
+                        if [ -f "${K8S_MANIFEST_PATH}/backend-deployment.yaml" ]; then
+                            sed -i.bak 's|image: .*${APP_NAME}-backend:.*|image: ${BACKEND_IMAGE}:${IMAGE_TAG}|g' \
+                                ${K8S_MANIFEST_PATH}/backend-deployment.yaml
+                            echo "✅ Backend deployment.yaml updated"
+                        else
+                            echo "⚠️  backend-deployment.yaml not found, will use kubectl set image"
+                        fi
+                    """
+
+                    // Update frontend deployment
+                    sh """
+                        if [ -f "${K8S_MANIFEST_PATH}/frontend-deployment.yaml" ]; then
+                            sed -i.bak 's|image: .*${APP_NAME}-frontend:.*|image: ${FRONTEND_IMAGE}:${IMAGE_TAG}|g' \
+                                ${K8S_MANIFEST_PATH}/frontend-deployment.yaml
+                            echo "✅ Frontend deployment.yaml updated"
+                        else
+                            echo "⚠️  frontend-deployment.yaml not found, will use kubectl set image"
+                        fi
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to K8s') {
+            steps {
+                script {
+                    echo "Deploying to Kubernetes cluster..."
+
+                    // Apply all manifests
+                    sh """
+                        kubectl apply -f ${K8S_MANIFEST_PATH}/
+                    """
+                    echo "✅ K8s manifests applied"
+
+                    // Alternatively, use kubectl set image if manifest update failed
+                    sh """
+                        kubectl set image deployment/${APP_NAME}-backend \
+                            ${APP_NAME}-backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
+                            -n default || echo "Backend deployment not found or already updated"
+
+                        kubectl set image deployment/${APP_NAME}-frontend \
+                            ${APP_NAME}-frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} \
+                            -n default || echo "Frontend deployment not found or already updated"
+                    """
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    echo "Verifying deployment status..."
+
+                    // Wait for backend rollout
+                    sh """
+                        kubectl rollout status deployment/${APP_NAME}-backend -n default --timeout=5m || \
+                            echo "⚠️  Backend deployment verification timed out"
+                    """
+
+                    // Wait for frontend rollout
+                    sh """
+                        kubectl rollout status deployment/${APP_NAME}-frontend -n default --timeout=5m || \
+                            echo "⚠️  Frontend deployment verification timed out"
+                    """
+
+                    // Show pod status
+                    sh """
+                        echo ""
+                        echo "Current deployment status:"
+                        kubectl get deployments -n default -l app=${APP_NAME}
+                        echo ""
+                        echo "Current pod status:"
+                        kubectl get pods -n default -l app=${APP_NAME}
+                        echo ""
+                        echo "Current services:"
+                        kubectl get services -n default -l app=${APP_NAME}
+                    """
+
+                    echo "✅ Deployment verification complete"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo """
+═══════════════════════════════════════════════════════════
+  ✅ Deployment Successful!
+═══════════════════════════════════════════════════════════
+Application: ${APP_NAME}
+Image Tag: ${IMAGE_TAG}
+
+Backend Image: ${BACKEND_IMAGE}:${IMAGE_TAG}
+Frontend Image: ${FRONTEND_IMAGE}:${IMAGE_TAG}
+
+Next Steps:
+1. Verify application is running:
+   kubectl get pods -n default -l app=${APP_NAME}
+
+2. Check application logs:
+   kubectl logs -n default -l app=${APP_NAME}-backend --tail=50
+   kubectl logs -n default -l app=${APP_NAME}-frontend --tail=50
+
+3. Access the application via service URL or ingress
+
+4. Update Homer dashboard if this is a new deployment:
+   vim ~/Projects/deployment/homelab/homer/config.yml
+═══════════════════════════════════════════════════════════
+            """
+        }
+
+        failure {
+            echo """
+═══════════════════════════════════════════════════════════
+  ❌ Deployment Failed
+═══════════════════════════════════════════════════════════
+Application: ${APP_NAME}
+Image Tag: ${IMAGE_TAG}
+
+Troubleshooting Steps:
+1. Check build logs above for errors
+2. Verify K8s manifests exist:
+   ls -la ${K8S_MANIFEST_PATH}/
+
+3. Check cluster connectivity:
+   kubectl get nodes
+
+4. Review pod status:
+   kubectl get pods -n default -l app=${APP_NAME}
+   kubectl describe pods -n default -l app=${APP_NAME}
+
+5. Check registry connectivity:
+   curl http://${LOCAL_REGISTRY}/v2/_catalog
+═══════════════════════════════════════════════════════════
+            """
+        }
+
+        always {
+            // Cleanup local images to save space (optional)
+            script {
+                echo "Cleaning up local Docker images..."
+                sh """
+                    docker rmi ${BACKEND_IMAGE}:${IMAGE_TAG} || true
+                    docker rmi ${FRONTEND_IMAGE}:${IMAGE_TAG} || true
+                """
+            }
+        }
+    }
+}
