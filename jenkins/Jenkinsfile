@@ -7,7 +7,7 @@
  * Supports multi-architecture builds (linux/amd64, linux/arm64) via Docker buildx.
  *
  * Requirements:
- * - Local Docker registry: 192.168.68.124:30502
+ * - Local Docker registry: 192.168.68.124:30501
  * - K8s manifests: ~/Projects/deployment/homelab/base/applications/velocity-banking/
  * - kubectl configured with homelab cluster access
  * - Docker buildx available on Jenkins agent
@@ -29,7 +29,7 @@ pipeline {
         APP_NAME = 'velocity-banking'
 
         // Local registry configuration (NodePort access via control plane)
-        LOCAL_REGISTRY = '192.168.68.124:30502'
+        LOCAL_REGISTRY = '192.168.68.124:30501'
 
         // Image names
         BACKEND_IMAGE = "${LOCAL_REGISTRY}/${APP_NAME}-backend"
