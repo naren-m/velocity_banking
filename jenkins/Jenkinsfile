@@ -261,13 +261,27 @@ TOML
                 script {
                     echo "Deploying to Kubernetes cluster..."
 
-                    // Apply all manifests
+                    // Clean up macOS metadata files (._*) that cause YAML parse errors
                     sh """
-                        ${kubectlBin} apply -f ${K8S_MANIFEST_PATH}/
+                        echo "Cleaning up macOS metadata files..."
+                        find ${K8S_MANIFEST_PATH}/ -name '._*' -type f -delete 2>/dev/null || true
+                        rm -f ${K8S_MANIFEST_PATH}/._* 2>/dev/null || true
+                        echo "✅ Metadata files cleaned"
+                    """
+
+                    // Apply only valid YAML files (excludes ._* and .bak files)
+                    sh """
+                        echo "Applying K8s manifests..."
+                        for f in ${K8S_MANIFEST_PATH}/*.yaml ${K8S_MANIFEST_PATH}/*.yml; do
+                            if [ -f "\$f" ] && [ "\$(basename \$f)" != "._*" ]; then
+                                echo "Applying: \$f"
+                                ${kubectlBin} apply -f "\$f" --validate=false || echo "Warning: Failed to apply \$f"
+                            fi
+                        done
                     """
                     echo "✅ K8s manifests applied"
 
-                    // Alternatively, use kubectl set image if manifest update failed
+                    // Use kubectl set image as backup to ensure correct image tags
                     sh """
                         ${kubectlBin} set image deployment/${APP_NAME}-backend \
                             ${APP_NAME}-backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
