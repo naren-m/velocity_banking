@@ -62,7 +62,8 @@ pipeline {
         FRONTEND_IMAGE = "${LOCAL_REGISTRY}/${APP_NAME}-frontend"
 
         // Build settings
-        PLATFORMS = 'linux/amd64,linux/arm64'
+        // Changed to amd64-only to avoid QEMU arm64 timeout issues
+        PLATFORMS = 'linux/amd64'
         BUILDX_BUILDER = 'homelab-builder'
         DOCKER_BUILDKIT = '1'
 
