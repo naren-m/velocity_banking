@@ -19,6 +19,32 @@
  * - Mac Mini: arm64 worker (Apple Silicon)
  */
 
+// Global variable for kubectl binary path
+def kubectlBin = 'kubectl'  // Will be set to actual path in Setup Deploy Tools stage
+
+/**
+ * Setup kubectl for deployment operations
+ * Downloads kubectl to workspace directory (no sudo needed)
+ */
+def setupKubectl() {
+    def kubectlPath = "${WORKSPACE}/bin/kubectl"
+    sh """
+        mkdir -p ${WORKSPACE}/bin
+        if [ -x "${kubectlPath}" ]; then
+            echo "✅ kubectl already available at ${kubectlPath}"
+            ${kubectlPath} version --client --short 2>/dev/null || true
+        else
+            echo "Downloading kubectl..."
+            curl -sLO "https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            mv kubectl ${kubectlPath}
+            echo "✅ kubectl downloaded to ${kubectlPath}"
+            ${kubectlPath} version --client --short 2>/dev/null || true
+        fi
+    """
+    return kubectlPath
+}
+
 pipeline {
     agent {
         label 'docker-buildx'
@@ -79,6 +105,18 @@ pipeline {
                         fi
                     """
                     echo "✅ K8s manifest directory exists"
+                }
+            }
+        }
+
+        stage('Setup Deploy Tools') {
+            steps {
+                script {
+                    echo "═══════════════════════════════════════════════════════════"
+                    echo "Stage: Setup Deploy Tools (kubectl)"
+                    echo "═══════════════════════════════════════════════════════════"
+                    kubectlBin = setupKubectl()
+                    echo "kubectl binary path: ${kubectlBin}"
                 }
             }
         }
@@ -225,17 +263,17 @@ TOML
 
                     // Apply all manifests
                     sh """
-                        kubectl apply -f ${K8S_MANIFEST_PATH}/
+                        ${kubectlBin} apply -f ${K8S_MANIFEST_PATH}/
                     """
                     echo "✅ K8s manifests applied"
 
                     // Alternatively, use kubectl set image if manifest update failed
                     sh """
-                        kubectl set image deployment/${APP_NAME}-backend \
+                        ${kubectlBin} set image deployment/${APP_NAME}-backend \
                             ${APP_NAME}-backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
                             -n default || echo "Backend deployment not found or already updated"
 
-                        kubectl set image deployment/${APP_NAME}-frontend \
+                        ${kubectlBin} set image deployment/${APP_NAME}-frontend \
                             ${APP_NAME}-frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} \
                             -n default || echo "Frontend deployment not found or already updated"
                     """
@@ -250,13 +288,13 @@ TOML
 
                     // Wait for backend rollout
                     sh """
-                        kubectl rollout status deployment/${APP_NAME}-backend -n default --timeout=5m || \
+                        ${kubectlBin} rollout status deployment/${APP_NAME}-backend -n default --timeout=5m || \
                             echo "⚠️  Backend deployment verification timed out"
                     """
 
                     // Wait for frontend rollout
                     sh """
-                        kubectl rollout status deployment/${APP_NAME}-frontend -n default --timeout=5m || \
+                        ${kubectlBin} rollout status deployment/${APP_NAME}-frontend -n default --timeout=5m || \
                             echo "⚠️  Frontend deployment verification timed out"
                     """
 
@@ -264,13 +302,13 @@ TOML
                     sh """
                         echo ""
                         echo "Current deployment status:"
-                        kubectl get deployments -n default -l app=${APP_NAME}
+                        ${kubectlBin} get deployments -n default -l app=${APP_NAME}
                         echo ""
                         echo "Current pod status:"
-                        kubectl get pods -n default -l app=${APP_NAME}
+                        ${kubectlBin} get pods -n default -l app=${APP_NAME}
                         echo ""
                         echo "Current services:"
-                        kubectl get services -n default -l app=${APP_NAME}
+                        ${kubectlBin} get services -n default -l app=${APP_NAME}
                     """
 
                     echo "✅ Deployment verification complete"
