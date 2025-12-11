@@ -208,10 +208,11 @@ TOML
                         script: "docker buildx imagetools inspect ${BACKEND_IMAGE}:${IMAGE_TAG}",
                         returnStdout: true
                     )
-                    if (!backendManifest.contains('linux/amd64') || !backendManifest.contains('linux/arm64')) {
-                        error("Backend image manifest missing required architectures!")
+                    // Verify amd64-only build (arm64 disabled due to QEMU timeout issues)
+                    if (!backendManifest.contains('linux/amd64')) {
+                        error("Backend image manifest missing required amd64 architecture!")
                     }
-                    echo "✅ Backend image verified for amd64 and arm64"
+                    echo "✅ Backend image verified for amd64"
 
                     // Verify frontend image
                     sh "docker buildx imagetools inspect ${FRONTEND_IMAGE}:${IMAGE_TAG}"
@@ -219,10 +220,11 @@ TOML
                         script: "docker buildx imagetools inspect ${FRONTEND_IMAGE}:${IMAGE_TAG}",
                         returnStdout: true
                     )
-                    if (!frontendManifest.contains('linux/amd64') || !frontendManifest.contains('linux/arm64')) {
-                        error("Frontend image manifest missing required architectures!")
+                    // Verify amd64-only build (arm64 disabled due to QEMU timeout issues)
+                    if (!frontendManifest.contains('linux/amd64')) {
+                        error("Frontend image manifest missing required amd64 architecture!")
                     }
-                    echo "✅ Frontend image verified for amd64 and arm64"
+                    echo "✅ Frontend image verified for amd64"
                 }
             }
         }
