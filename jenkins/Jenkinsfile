@@ -24,24 +24,62 @@ def kubectlBin = 'kubectl'  // Will be set to actual path in Setup Deploy Tools 
 
 /**
  * Setup kubectl for deployment operations
- * Downloads kubectl to workspace directory (no sudo needed)
+ * Downloads kubectl to workspace directory and configures kubeconfig
+ * The Jenkins agent runs on Dell Laptop (hanuma) which is also the k3s control plane
  */
 def setupKubectl() {
     def kubectlPath = "${WORKSPACE}/bin/kubectl"
+    def kubeconfigPath = "${WORKSPACE}/.kube/config"
+
     sh """
         mkdir -p ${WORKSPACE}/bin
+        mkdir -p ${WORKSPACE}/.kube
+
+        # Download kubectl if not present
         if [ -x "${kubectlPath}" ]; then
             echo "✅ kubectl already available at ${kubectlPath}"
-            ${kubectlPath} version --client --short 2>/dev/null || true
         else
             echo "Downloading kubectl..."
             curl -sLO "https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl"
             chmod +x kubectl
             mv kubectl ${kubectlPath}
             echo "✅ kubectl downloaded to ${kubectlPath}"
-            ${kubectlPath} version --client --short 2>/dev/null || true
         fi
+
+        # Setup kubeconfig for k3s cluster on control plane (192.168.68.124)
+        # Try to copy from mounted k3s config first, then fall back to creating one
+        if [ -f /etc/rancher/k3s/k3s.yaml ]; then
+            echo "Copying k3s config from /etc/rancher/k3s/k3s.yaml..."
+            cat /etc/rancher/k3s/k3s.yaml | sed 's/127.0.0.1/192.168.68.124/g' > ${kubeconfigPath}
+            chmod 600 ${kubeconfigPath}
+            echo "✅ kubeconfig created from k3s.yaml"
+        elif [ -f /var/jenkins_home/.kube/config ]; then
+            echo "Copying kubeconfig from /var/jenkins_home/.kube/config..."
+            cp /var/jenkins_home/.kube/config ${kubeconfigPath}
+            chmod 600 ${kubeconfigPath}
+            echo "✅ kubeconfig copied from jenkins_home"
+        elif [ -f ~/.kube/config ]; then
+            echo "Copying kubeconfig from ~/.kube/config..."
+            cp ~/.kube/config ${kubeconfigPath}
+            chmod 600 ${kubeconfigPath}
+            echo "✅ kubeconfig copied from home directory"
+        else
+            echo "⚠️  No existing kubeconfig found, creating minimal config..."
+            echo "Note: This may not work - please mount k3s.yaml into Jenkins container"
+        fi
+
+        # Set KUBECONFIG env var for this pipeline
+        export KUBECONFIG=${kubeconfigPath}
+
+        # Verify cluster connectivity
+        echo "Testing cluster connectivity..."
+        ${kubectlPath} --kubeconfig=${kubeconfigPath} cluster-info 2>/dev/null || echo "⚠️  Could not connect to cluster - kubeconfig may be missing"
+        ${kubectlPath} --kubeconfig=${kubeconfigPath} version --client --short 2>/dev/null || true
     """
+
+    // Set KUBECONFIG environment variable for subsequent stages
+    env.KUBECONFIG = kubeconfigPath
+
     return kubectlPath
 }
 
@@ -278,7 +316,7 @@ TOML
                         for f in ${K8S_MANIFEST_PATH}/*.yaml ${K8S_MANIFEST_PATH}/*.yml; do
                             if [ -f "\$f" ] && [ "\$(basename \$f)" != "._*" ]; then
                                 echo "Applying: \$f"
-                                ${kubectlBin} apply -f "\$f" --validate=false || echo "Warning: Failed to apply \$f"
+                                ${kubectlBin} --kubeconfig=\${KUBECONFIG} apply -f "\$f" --validate=false || echo "Warning: Failed to apply \$f"
                             fi
                         done
                     """
@@ -286,11 +324,11 @@ TOML
 
                     // Use kubectl set image as backup to ensure correct image tags
                     sh """
-                        ${kubectlBin} set image deployment/${APP_NAME}-backend \
+                        ${kubectlBin} --kubeconfig=\${KUBECONFIG} set image deployment/${APP_NAME}-backend \
                             ${APP_NAME}-backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
                             -n default || echo "Backend deployment not found or already updated"
 
-                        ${kubectlBin} set image deployment/${APP_NAME}-frontend \
+                        ${kubectlBin} --kubeconfig=\${KUBECONFIG} set image deployment/${APP_NAME}-frontend \
                             ${APP_NAME}-frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} \
                             -n default || echo "Frontend deployment not found or already updated"
                     """
@@ -305,13 +343,13 @@ TOML
 
                     // Wait for backend rollout
                     sh """
-                        ${kubectlBin} rollout status deployment/${APP_NAME}-backend -n default --timeout=5m || \
+                        ${kubectlBin} --kubeconfig=\${KUBECONFIG} rollout status deployment/${APP_NAME}-backend -n default --timeout=5m || \
                             echo "⚠️  Backend deployment verification timed out"
                     """
 
                     // Wait for frontend rollout
                     sh """
-                        ${kubectlBin} rollout status deployment/${APP_NAME}-frontend -n default --timeout=5m || \
+                        ${kubectlBin} --kubeconfig=\${KUBECONFIG} rollout status deployment/${APP_NAME}-frontend -n default --timeout=5m || \
                             echo "⚠️  Frontend deployment verification timed out"
                     """
 
@@ -319,13 +357,13 @@ TOML
                     sh """
                         echo ""
                         echo "Current deployment status:"
-                        ${kubectlBin} get deployments -n default -l app=${APP_NAME}
+                        ${kubectlBin} --kubeconfig=\${KUBECONFIG} get deployments -n default -l app=${APP_NAME}
                         echo ""
                         echo "Current pod status:"
-                        ${kubectlBin} get pods -n default -l app=${APP_NAME}
+                        ${kubectlBin} --kubeconfig=\${KUBECONFIG} get pods -n default -l app=${APP_NAME}
                         echo ""
                         echo "Current services:"
-                        ${kubectlBin} get services -n default -l app=${APP_NAME}
+                        ${kubectlBin} --kubeconfig=\${KUBECONFIG} get services -n default -l app=${APP_NAME}
                     """
 
                     echo "✅ Deployment verification complete"
