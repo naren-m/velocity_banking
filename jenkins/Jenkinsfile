@@ -8,7 +8,7 @@ import groovy.transform.Field
 @Field def config = [
     registry: '192.168.68.124:30501',
     appName: 'velocity-banking',
-    manifestRepoUrl: 'https://github.com/naren-m/homelab.git',
+    manifestRepoUrl: 'git@github.com:naren-m/homelab.git',
     gitCredentialsId: 'github-ssh-key',
     manifestRelativePath: 'base/applications/velocity-banking',
     namespace: 'velocity-banking',
