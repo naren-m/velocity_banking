@@ -1,10 +1,11 @@
+import groovy.transform.Field
 #!/usr/bin/env groovy
 
 /**
  * Velocity Banking - Multi-Architecture GitOps Pipeline
  */
 
-def config = [
+@Field def config = [
     // Registry settings
     registry: '192.168.68.124:30501',
     appName: 'velocity-banking',
@@ -23,7 +24,7 @@ def config = [
     builderName: 'homelab-builder'
 ]
 
-def imageTag = ''
+@Field def imageTag = ''
 
 pipeline {
     agent { label 'docker-buildx' }
@@ -66,8 +67,8 @@ pipeline {
   http = true
   insecure = true
 TOML
-                        docker buildx rm ${config.builderName} 2>/dev/null || true
-                        docker buildx create --name ${config.builderName} --driver docker-container --config /tmp/buildx-config/buildkitd.toml --use --bootstrap
+                        if docker buildx inspect ${config.builderName} >/dev/null 2>&1; then echo "Builder exists"; else
+                        docker buildx create --name ${config.builderName} --driver docker-container --config /tmp/buildx-config/buildkitd.toml --use --bootstrap; fi
                     """
                 }
             }
