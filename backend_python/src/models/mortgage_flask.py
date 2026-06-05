@@ -1,6 +1,11 @@
 """Mortgage model for Flask."""
-from datetime import datetime
+from datetime import datetime, timezone
 from .base_flask import db
+
+
+def utc_now():
+    """Get current UTC time."""
+    return datetime.now(timezone.utc)
 
 
 class Mortgage(db.Model):
@@ -18,9 +23,9 @@ class Mortgage(db.Model):
     term_months = db.Column(db.Integer, nullable=False)
     monthly_income = db.Column(db.Float, nullable=True)
     monthly_expenses = db.Column(db.Float, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
     updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+        db.DateTime, default=utc_now, onupdate=utc_now, nullable=False
     )
 
     # Relationships

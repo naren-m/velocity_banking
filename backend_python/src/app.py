@@ -100,18 +100,30 @@ def create_app():
             }
         )
 
+    # Request logging middleware
+    @app.before_request
+    def log_request():
+        """Log incoming requests for security monitoring."""
+        logger.info(
+            f"Request: {request.method} {request.path} from {request.remote_addr}"
+        )
+
     # Error handlers
     @app.errorhandler(400)
     def bad_request(error):
+        logger.warning(f"Bad request from {request.remote_addr}: {str(error)}")
         return jsonify({"error": "Bad request", "message": str(error)}), 400
 
     @app.errorhandler(404)
     def not_found(error):
+        logger.info(f"Not found: {request.path} from {request.remote_addr}")
         return jsonify({"error": "Not found", "message": str(error)}), 404
 
     @app.errorhandler(500)
     def internal_error(error):
-        logger.error(f"Internal error: {str(error)}", exc_info=True)
+        logger.error(
+            f"Internal error from {request.remote_addr}: {str(error)}", exc_info=True
+        )
         return jsonify({"error": "Internal server error"}), 500
 
     return app

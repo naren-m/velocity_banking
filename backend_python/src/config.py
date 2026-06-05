@@ -1,4 +1,6 @@
 """Application configuration."""
+import os
+import secrets
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,7 +13,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:////app/data/velocity_banking.db"
 
     # Security
-    secret_key: str = "dev-secret-key-change-in-production"
+    secret_key: str = os.getenv("SECRET_KEY") or secrets.token_urlsafe(32)
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 

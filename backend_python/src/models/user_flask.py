@@ -1,6 +1,11 @@
 """User model for Flask."""
-from datetime import datetime
+from datetime import datetime, timezone
 from .base_flask import db
+
+
+def utc_now():
+    """Get current UTC time."""
+    return datetime.now(timezone.utc)
 
 
 class User(db.Model):
@@ -13,7 +18,7 @@ class User(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
     name = db.Column(db.String, nullable=True)
     password_hash = db.Column(db.String, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
 
     # Relationships
     mortgages = db.relationship("Mortgage", back_populates="user", cascade="all, delete-orphan")

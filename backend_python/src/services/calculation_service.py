@@ -18,7 +18,17 @@ class CalculationService:
 
         Returns:
             Monthly payment amount
+
+        Raises:
+            ValueError: If inputs are invalid
         """
+        if principal <= 0:
+            raise ValueError("Principal must be positive")
+        if annual_rate < 0:
+            raise ValueError("Interest rate cannot be negative")
+        if months <= 0:
+            raise ValueError("Term months must be positive")
+
         monthly_rate = annual_rate / 12 / 100
         if monthly_rate == 0:
             return principal / months
@@ -40,12 +50,29 @@ class CalculationService:
 
         Returns:
             Complete amortization schedule with totals
+
+        Raises:
+            ValueError: If inputs are invalid
         """
+        if principal <= 0:
+            raise ValueError("Principal must be positive")
+        if annual_rate < 0:
+            raise ValueError("Interest rate cannot be negative")
+        if monthly_payment <= 0:
+            raise ValueError("Monthly payment must be positive")
+
         schedule: list[AmortizationEntry] = []
         balance = principal
         monthly_rate = annual_rate / 12 / 100
         month = 0
         total_interest = 0.0
+
+        # Check if payment is sufficient to cover interest
+        min_payment = principal * monthly_rate
+        if monthly_payment < min_payment:
+            raise ValueError(
+                f"Monthly payment ({monthly_payment:.2f}) is too low to cover minimum interest ({min_payment:.2f})"
+            )
 
         while balance > 0.01 and month < 360:  # Max 30 years
             month += 1

@@ -1,6 +1,11 @@
 """Payment model for Flask."""
-from datetime import datetime
+from datetime import datetime, timezone
 from models.base_flask import db
+
+
+def utc_now():
+    """Get current UTC time."""
+    return datetime.now(timezone.utc)
 
 
 class Payment(db.Model):
@@ -12,10 +17,10 @@ class Payment(db.Model):
     mortgage_id = db.Column(db.String, db.ForeignKey("mortgages.id"), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     payment_type = db.Column(db.String, nullable=False)  # regular, chunk, extra
-    payment_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    payment_date = db.Column(db.DateTime, default=utc_now, nullable=False)
     principal_amount = db.Column(db.Float, nullable=True)
     interest_amount = db.Column(db.Float, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
 
     # Relationships
     mortgage = db.relationship("Mortgage", backref="payments")
