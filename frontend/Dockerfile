@@ -1,4 +1,4 @@
-FROM 192.168.68.124:30501/node:18-alpine AS builder
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM 192.168.68.124:30501/nginx:alpine
+FROM nginx:alpine
 
 # Copy built files to nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
